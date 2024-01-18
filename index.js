@@ -135,7 +135,7 @@ app.post("/admin/signin", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ username: username });
+    const user = await Admin.findOne({ username: username });
     if (!user) {
       return res.status(400).json({ msg: "User not found" });
     }
