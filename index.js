@@ -139,7 +139,7 @@ app.post("/admin/signin", async (req, res) => {
     if (!user) {
       return res.status(400).json({ msg: "User not found" });
     }
-    const dbPassword = user.password;
+    const dbPassword = username.password;
     const result = await bcrypt.compare(password, dbPassword);
     if (result) {
       return res.status(200).json({ msg: "user logged in" });
