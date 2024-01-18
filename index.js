@@ -76,14 +76,14 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/signin", async (req, res) => {
-  const email = req.body.email;
+  const email = req.body.username;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ username: username });
     if (!user) {
       return res.status(400).json({ msg: "User not found" });
     }
-    const dbPassword = user.personal.password;
+    const dbPassword = user.password;
     const result = await bcrypt.compare(password, dbPassword);
     if (result) {
       return res.status(200).json({ msg: "user logged in" });
