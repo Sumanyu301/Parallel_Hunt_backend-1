@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000; //env mein port storage
 
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
-const Event = require("./models/admin.js"); //admin ka schema
+const Admin = require("./models/admin.js"); //admin ka schema
 
 const z = require("zod"); //zod input validation.
 app.use(express.json());
