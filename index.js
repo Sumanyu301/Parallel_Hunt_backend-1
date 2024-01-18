@@ -94,6 +94,10 @@ app.post("/signin", async (req, res) => {
   }
 });
 
+app.get('/',(req,res)=>{
+    res.send("Server is running");
+})
+
 app.listen(port, () => {
   console.log(`Server Starting on on http://localhost:${port}`);
 });
