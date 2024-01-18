@@ -131,36 +131,23 @@ app.post("/person", async (req, res) => {
   }
 });
 
-app.post("/admin/signup", async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-
-  const existingAdmin = await Admin.findOne({ username: username });
-
-  if (existingAdmin) {
-    return res.status(404).send("admin already exists");
-  }
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const newAdmin = new Admin({
-    username: username,
-    password: hashedPassword,
-  });
-
-  await newAdmin.save();
-  res.send("Admin created successfully.");
-});
-
 app.post("/admin/signin", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  const check = await Admin.findOne({ username: username, password: password });
-  if (check) {
-    res.status(200).json({
-      msg: "sign in successful",
-    });
-  } else {
-    res.status(404).send("user not found sign up");
+  try {
+    const user = await User.findOne({ username: username });
+    if (!user) {
+      return res.status(400).json({ msg: "User not found" });
+    }
+    const dbPassword = user.password;
+    const result = await bcrypt.compare(password, dbPassword);
+    if (result) {
+      return res.status(200).json({ msg: "user logged in" });
+    } else {
+      return res.status(400).json({ msg: "wrong credentials" });
+    }
+  } catch (err) {
+    return res.status(400).send(err);
   }
 });
 
