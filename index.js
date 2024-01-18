@@ -151,13 +151,13 @@ app.post("/admin/signup", async (req, res) => {
   res.send("Admin created successfully.");
 });
 
-app.post("/admin/signin", inputmiddleware, async (req, res) => {
+app.post("/admin/signin",async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const check = await Admin.findOne({ username: username, password: password });
   if (check) {
     res.status(200).json({
-      msg:"sign in successful",
+      msg: "sign in successful",
     });
   } else {
     res.status(404).send("user not found sign up");
