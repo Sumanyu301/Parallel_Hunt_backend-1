@@ -7,6 +7,7 @@ const port = process.env.PORT || 5000; //env mein port storage
 //mongoose connection
 
 const User = require("./models/user.js"); //importing the db schema for user
+const Event = require("./models/event.js"); //event ka schema
 
 const z = require("zod"); //zod input validation.
 app.use(express.json());
@@ -94,9 +95,45 @@ app.post("/signin", async (req, res) => {
   }
 });
 
-app.get('/',(req,res)=>{
-    res.send("Server is running");
-})
+app.post("/person", async (req, res) => {
+  const organisation = req.body.organisation;
+  const profession = req.body.profession;
+  const experience = req.body.experience;
+  const skills = req.body.skills;
+  const certification = req.body.certification;
+  const tech_stack = req.body.tech_stack;
+  const availability = req.body.availability;
+  const achievements = req.body.achievements;
+
+  try {
+    const users = await User.find({
+      $and: [
+        {
+          "professional.availability": true,
+        },
+        {
+          $or: [
+            { "professional.organisation": { $exists: true } },
+            { "professional.profession": { $exists: true } },
+            { "professional.experience": { $exists: true } },
+            { "professional.skills": { $exists: true } },
+            { "professional.certification": { $exists: true } },
+            { "professional.tech_stack": { $exists: true } },
+            { "professional.achievements": { $exists: true } },
+          ],
+        },
+      ],
+    });
+
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+app.get("/", (req, res) => {
+  res.send("Server is running");
+});
 
 app.listen(port, () => {
   console.log(`Server Starting on on http://localhost:${port}`);
