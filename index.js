@@ -51,7 +51,6 @@ app.post("/signup", async (req, res) => {
   const data = req.body;
   const password = data.personal.password;
 
-  // Check if user with the provided email already exists
   const existingUser = await User.findOne({
     "personal.Email": data.personal.Email,
   });
@@ -141,17 +140,18 @@ app.post("/admin/signup", async (req, res) => {
   if (existingAdmin) {
     return res.status(404).send("admin already exists");
   }
-
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
   const newAdmin = new Admin({
     username: username,
-    password: password,
+    password: hashedPassword,
   });
 
   await newAdmin.save();
   res.send("Admin created successfully.");
 });
 
-app.post("/admin/signin",async (req, res) => {
+app.post("/admin/signin", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const check = await Admin.findOne({ username: username, password: password });
