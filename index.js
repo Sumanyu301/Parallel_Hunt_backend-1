@@ -8,6 +8,7 @@ const port = process.env.PORT || 5000; //env mein port storage
 
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
+const Event = require("./models/admin.js"); //admin ka schema
 
 const z = require("zod"); //zod input validation.
 app.use(express.json());
@@ -128,6 +129,38 @@ app.post("/person", async (req, res) => {
     res.status(200).json(users);
   } catch (err) {
     res.status(400).send(err);
+  }
+});
+
+app.post("/admin/signup", async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  const existingAdmin = await Admin.findOne({ username: username });
+
+  if (existingAdmin) {
+    return res.status(404).send("admin already exists");
+  }
+
+  const newAdmin = new Admin({
+    username: username,
+    password: password,
+  });
+
+  await newAdmin.save();
+  res.send("Admin created successfully.");
+});
+
+app.post("/admin/signin", inputmiddleware, async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  const check = await Admin.findOne({ username: username, password: password });
+  if (check) {
+    res.status(200).json({
+      msg:"sign in successful",
+    });
+  } else {
+    res.status(404).send("user not found sign up");
   }
 });
 
