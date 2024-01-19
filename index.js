@@ -3,9 +3,11 @@ const app = express();
 const bcrypt = require("bcryptjs"); // password hashing ke liye
 const mongoose = require("mongoose");
 const dotenv = require("dotenv"); //environment var ke liye
+const cors = require("cors"); // cors library
 const port = process.env.PORT || 5000; //env mein port storage
-//mongoose connection
 
+app.use(cors()); // enable CORS
+//mongoose connection
 
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
@@ -80,7 +82,7 @@ app.post("/login", async (req, res) => {
   const email = req.body.Email;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ Email: email});
+    const user = await User.findOne({ Email: email });
     if (!user) {
       return res.status(400).json({ msg: "wrong credentials" });
     }
@@ -155,7 +157,6 @@ app.post("/admin/signin", async (req, res) => {
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
-
 
 const errorHandlers = require("./handlers/errorHandlers.js");
 app.use(errorHandlers.notFound);
