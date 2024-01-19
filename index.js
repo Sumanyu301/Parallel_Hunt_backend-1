@@ -5,14 +5,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv"); //environment var ke liye
 const port = process.env.PORT || 5000; //env mein port storage
 //mongoose connection
-const errorHandlers = require("./handlers/errorHandlers.js");
-app.use(errorHandlers.notFound);
-app.use(errorHandlers.mongoseErrors);
-if (process.env.ENV === "DEVELOPMENT") {
-  app.use(errorHandlers.developmentErrors);
-} else {
-  app.use(errorHandlers.productionErrors);
-}
+
 
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
@@ -162,6 +155,16 @@ app.post("/admin/signin", async (req, res) => {
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
+
+
+const errorHandlers = require("./handlers/errorHandlers.js");
+app.use(errorHandlers.notFound);
+app.use(errorHandlers.mongoseErrors);
+if (process.env.ENV === "DEVELOPMENT") {
+  app.use(errorHandlers.developmentErrors);
+} else {
+  app.use(errorHandlers.productionErrors);
+}
 
 app.listen(port, () => {
   console.log(`Server Starting on on http://localhost:${port}`);
