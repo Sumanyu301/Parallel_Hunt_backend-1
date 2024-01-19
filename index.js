@@ -80,7 +80,7 @@ app.post("/login", async (req, res) => {
   const email = req.body.Email;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({ Email: email});
     if (!user) {
       return res.status(400).json({ msg: "wrong credentials" });
     }
