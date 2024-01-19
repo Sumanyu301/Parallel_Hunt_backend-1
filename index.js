@@ -77,7 +77,7 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const email = req.body.username;
+  const email = req.body.Email;
   const password = req.body.password;
   try {
     const user = await User.findOne({ username: username });
