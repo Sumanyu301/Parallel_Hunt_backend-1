@@ -156,7 +156,7 @@ app.post("/admin/signin", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Server is running");
+  res.send("Server is running 12e23432");
 });
 
 const errorHandlers = require("./handlers/errorHandlers.js");
