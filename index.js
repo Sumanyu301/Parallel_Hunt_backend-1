@@ -5,6 +5,14 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv"); //environment var ke liye
 const port = process.env.PORT || 5000; //env mein port storage
 //mongoose connection
+const errorHandlers = require("./handlers/errorHandlers.js");
+app.use(errorHandlers.notFound);
+app.use(errorHandlers.mongoseErrors);
+if (process.env.ENV === "DEVELOPMENT") {
+  app.use(errorHandlers.developmentErrors);
+} else {
+  app.use(errorHandlers.productionErrors);
+}
 
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
@@ -137,12 +145,12 @@ app.post("/admin/signin", async (req, res) => {
   try {
     const user = await Admin.findOne({ username: username });
     if (!user) {
-      return res.status(400).json({ msg: "User not found" });
+      return res.status(400).json({ msg: "wrong credentials" });
     }
     const dbPassword = user.password;
     const result = await bcrypt.compare(password, dbPassword);
     if (result) {
-      return res.status(200).json({ msg: "user logged in" });
+      return res.status(200).json({ msg: "Admin logged in" });
     } else {
       return res.status(400).json({ msg: "wrong credentials" });
     }
