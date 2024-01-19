@@ -170,6 +170,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
 app.post("/uploadImage", upload.single("image"), async (req, res) => {
   console.log(req.body);
   const imageName = req.file.filename;
