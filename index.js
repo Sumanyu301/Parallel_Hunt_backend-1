@@ -82,7 +82,7 @@ app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: username });
     if (!user) {
-      return res.status(400).json({ msg: "User not found" });
+      return res.status(400).json({ msg: "wrong credentials" });
     }
     const dbPassword = user.password;
     const result = await bcrypt.compare(password, dbPassword);
