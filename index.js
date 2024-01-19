@@ -57,7 +57,7 @@ app.post("/signup", async (req, res) => {
     "personal.Email": data.personal.Email,
   });
   if (existingUser) {
-    return res.status(400).json({ error: "Email is already in use" });
+    return res.status(200).json({ msg:false });
   }
 
   //creating a salt
@@ -71,7 +71,7 @@ app.post("/signup", async (req, res) => {
 
     const newUser = new User(parsedData);
     await newUser.save();
-    res.status(200).json({ msg: "user created successfully" });
+    res.status(200).json({ msg:true });
   } catch (error) {
     res.status(400).send(error);
   }
