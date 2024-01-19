@@ -14,6 +14,7 @@ const Event = require("./models/event.js"); //event ka schema
 const Admin = require("./models/admin.js"); //admin ka schema
 
 const z = require("zod"); //zod input validation.
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //form se data jab aata hai
 
@@ -79,14 +80,14 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const email = req.body.Email;
+  const Email = req.body.Email;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ Email: email });
+    const user = await User.findOne({ "personal.Email": Email });
     if (!user) {
       return res.status(400).json({ msg: "wrong credentials" });
     }
-    const dbPassword = user.password;
+    const dbPassword = user.personal.password;
     const result = await bcrypt.compare(password, dbPassword);
     if (result) {
       return res.status(200).json({ msg: "user logged in" });
