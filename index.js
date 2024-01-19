@@ -23,24 +23,19 @@ app.use(express.urlencoded({ extended: true })); //form se data jab aata hai
 const userZodSchema = z.object({
   personal: z.object({
     name: z.string(),
-    age: z.number(),
-    pincode: z.number(),
     DOB: z.string(),
     Email: z.string().email(),
     password: z.string(),
-    username: z.string(),
     address: z.string(),
   }),
   professional: z.object({
     organisation: z.string().optional(),
-    profession: z.string().optional(),
-    experience: z.number().optional(),
     skills: z.string().optional(),
-    certification: z.string().optional(),
     tech_stack: z.string().optional(),
     availability: z.boolean().optional(),
     resume: z.string().optional(),
     achievements: z.string().optional(),
+    education: z.string(),
   }),
 });
 
@@ -176,7 +171,7 @@ app.post("/upload", (req, res) => {
       console.log(err);
     } else {
       const newImage = new imageModel({
-        email:req.body.email,
+        email: req.body.email,
         image: {
           data: req.file.filename,
           contentType: "image/png",
@@ -189,7 +184,6 @@ app.post("/upload", (req, res) => {
     }
   });
 });
-
 
 app.get("/getImage", async (req, res) => {
   try {
@@ -206,7 +200,9 @@ app.get("/getImage", async (req, res) => {
     res.send(img.image.data);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "An error occurred while retrieving the image" });
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving the image" });
   }
 });
 
