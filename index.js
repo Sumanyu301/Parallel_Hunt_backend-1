@@ -85,14 +85,15 @@ app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ "personal.Email": Email });
     if (!user) {
-      return res.status(400).json({ msg: "wrong credentials" });
+      return res.status(200).json({ msg: false });
     }
+    const name = user.personal.name;
     const dbPassword = user.personal.password;
     const result = await bcrypt.compare(password, dbPassword);
     if (result) {
-      return res.status(200).json({ msg: "user logged in" });
+      return res.status(200).json({ msg: true, name: name });
     } else {
-      return res.status(400).json({ msg: "wrong credentials" });
+      return res.status(200).json({ msg: false });
     }
   } catch (err) {
     return res.status(400).send(err);
