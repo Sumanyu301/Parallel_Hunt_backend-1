@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs"); // password hashing ke liye
 const mongoose = require("mongoose");
 const dotenv = require("dotenv"); //environment var ke liye
 const cors = require("cors"); // cors library
+const multer = require("multer"); //image upload karne ke liye more like files ke liye but yeah
 const port = process.env.PORT || 5000; //env mein port storage
 
 app.use(cors()); // enable CORS
@@ -12,6 +13,7 @@ app.use(cors()); // enable CORS
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
 const Admin = require("./models/admin.js"); //admin ka schema
+const Images = require("./models/imageDetails.js")//image details
 
 const z = require("zod"); //zod input validation.
 
@@ -27,6 +29,7 @@ const userZodSchema = z.object({
     Email: z.string().email(),
     password: z.string(),
     username: z.string(),
+    address: z.string(),
   }),
   professional: z.object({
     organisation: z.string().optional(),
@@ -156,8 +159,41 @@ app.post("/admin/signin", async (req, res) => {
   }
 });
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "../src/images/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();//unique naam mile agar same file bhi bheji
+    cb(null, uniqueSuffix + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+app.post("/uploadImage", upload.single("image"), async (req, res) => {
+  console.log(req.body);
+  const imageName = req.file.filename;
+
+  try {
+    await Images.create({ image: imageName });
+    res.json({ status: "ok" });
+  } catch (error) {
+    res.json({ status: error });
+  }
+});
+
+app.get("/getImage", async (req, res) => {
+  try {
+    Images.find({}).then((data) => {
+      res.send({ status: "ok", data: data });
+    });
+  } catch (error) {
+    res.json({ status: error });
+  }
+});
+
 app.get("/", (req, res) => {
-  res.send("Server is running 12e23432");
+  res.send("Server is running ");
 });
 
 const errorHandlers = require("./handlers/errorHandlers.js");
