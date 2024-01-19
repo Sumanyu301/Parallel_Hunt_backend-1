@@ -13,7 +13,7 @@ app.use(cors()); // enable CORS
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
 const Admin = require("./models/admin.js"); //admin ka schema
-const Images = require("./models/imageDetails.js")//image details
+const Images = require("./models/imageDetails.js"); //image details
 
 const z = require("zod"); //zod input validation.
 
@@ -159,37 +159,54 @@ app.post("/admin/signin", async (req, res) => {
   }
 });
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../src/images/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();//unique naam mile agar same file bhi bheji
-    cb(null, uniqueSuffix + file.originalname);
+//STORAGE
+const Storage = multer.diskStorage({
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: Storage,
+}).single("testImage");
 
-app.post("/uploadImage", upload.single("image"), async (req, res) => {
-  console.log(req.body);
-  const imageName = req.file.filename;
-
-  try {
-    await Images.create({ image: imageName });
-    res.json({ status: "ok" });
-  } catch (error) {
-    res.json({ status: error });
-  }
+app.post("/upload", (req, res) => {
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const newImage = new imageModel({
+        email:req.body.email,
+        image: {
+          data: req.file.filename,
+          contentType: "image/png",
+        },
+      });
+      newImage
+        .save()
+        .then(() => res.send("successfully uploaded"))
+        .catch((err) => console.log(err));
+    }
+  });
 });
+
 
 app.get("/getImage", async (req, res) => {
   try {
-    Images.find({}).then((data) => {
-      res.send({ status: "ok", data: data });
-    });
+    const email = req.body.email;
+    // Find the image by email
+    const img = await imageModel.findOne({ email });
+
+    if (!img) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+
+    // Set the correct content type
+    res.contentType(img.image.contentType);
+    res.send(img.image.data);
   } catch (error) {
-    res.json({ status: error });
+    console.error(error);
+    res.status(500).json({ message: "An error occurred while retrieving the image" });
   }
 });
 
@@ -198,6 +215,7 @@ app.get("/", (req, res) => {
 });
 
 const errorHandlers = require("./handlers/errorHandlers.js");
+const imageModel = require("./models/imageDetails.js");
 app.use(errorHandlers.notFound);
 app.use(errorHandlers.mongoseErrors);
 if (process.env.ENV === "DEVELOPMENT") {
