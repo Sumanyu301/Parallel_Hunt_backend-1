@@ -76,7 +76,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/signin", async (req, res) => {
+app.post("/login", async (req, res) => {
   const email = req.body.username;
   const password = req.body.password;
   try {
