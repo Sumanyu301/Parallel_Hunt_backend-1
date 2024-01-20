@@ -159,7 +159,8 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     await image.save();
     res.send({ status: "ok" });
   } catch (error) {
-    res.json({ status: error });
+    console.log(error.message); // Log the error message to the console
+    res.status(500).send({ error: error.message }); // Send the error message in the response
   }
 });
 
