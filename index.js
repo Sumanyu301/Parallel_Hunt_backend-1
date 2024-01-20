@@ -148,12 +148,15 @@ cloudinary.config({
 
 app.post("/upload-image", upload.single("image"), async (req, res) => {
   try {
+    console.log(req.file); // Log the uploaded file
     const result = await cloudinary.uploader.upload(req.file.path);
+    console.log(result); // Log the result of the Cloudinary upload
     const profileImage = result.secure_url;
     fs.unlinkSync(req.file.path);
 
     // Find a user in the database
     const user = await User.findById(req.body.userId);
+    console.log(user); // Log the user
     if (!user) {
       return res.status(404).send({ message: 'User not found' });
     }
@@ -161,10 +164,11 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     // Set the image property
     user.professional.image = profileImage;
     await user.save();
+    console.log(user); // Log the updated user
 
     res.send(profileImage);
   } catch (err) {
-    console.log(err);
+    console.log(err); // Log any errors
   }
 });
 
