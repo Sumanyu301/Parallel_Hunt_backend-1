@@ -5,12 +5,9 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-  },
+  email: String,
 });
 
-const Images = mongoose.model("Images", imageSchema);
+const Images = mongoose.model("Images1", imageSchema);
 
 module.exports = Images;

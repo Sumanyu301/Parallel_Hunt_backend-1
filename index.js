@@ -12,7 +12,7 @@ app.use(cors()); // enable CORS
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
 const Admin = require("./models/admin.js"); //admin ka schema
-const Images = require("./models/imageDetails.js"); //image details
+const Images1 = require("./models/imageDetails.js"); //image details
 const path = require("path"); //path module
 const z = require("zod"); //zod input validation.
 
@@ -152,7 +152,7 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path);
     const profileImage = result.secure_url;
 
-    const image = new Images({
+    const image = new Images1({
       url: profileImage,
       email: email,
     });
@@ -165,13 +165,13 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
   }
 });
 
-app.get("/get-image", async (req, res) => {
+app.get("/get-images", async (req, res) => {
   try {
-    Images.find({}).then((data) => {
-      res.send({ status: "ok", data: data });
-    });
+    const images = await imageModel.find();
+    res.json(images);
   } catch (error) {
-    res.json({ status: error });
+    console.error(error.message);
+    res.status(500).json({ error: "Failed to fetch images" });
   }
 });
 
