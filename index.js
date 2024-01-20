@@ -59,7 +59,27 @@ app.post("/signup", async (req, res) => {
   if (existingUser) {
     return res.status(200).json({ msg: false });
   }
-
+  app.post("/upload-image", upload.single("image"), async (req, res) => {
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      const profileImage = result.secure_url;
+      fs.unlinkSync(req.file.path);
+  
+      // Find a user in the database
+      const user = await User.findById(req.body.userId);
+      if (!user) {
+        return res.status(404).send({ message: 'User not found' });
+      }
+  
+      // Set the image property
+      user.professional.image = profileImage;
+      await user.save();
+  
+      res.send(profileImage);
+    } catch (err) {
+      console.log(err);
+    }
+  });
   //creating a salt
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -146,27 +166,7 @@ cloudinary.config({
   api_secret: "vXLWAfYUrjLV1stNHS0qYzuWFiU",
 });
 
-app.post("/upload-image", upload.single("image"), async (req, res) => {
-  try {
-    const result = await cloudinary.uploader.upload(req.file.path);
-    const profileImage = result.secure_url;
-    fs.unlinkSync(req.file.path);
 
-    // Find a user in the database
-    const user = await User.findById(req.body.userId);
-    if (!user) {
-      return res.status(404).send({ message: 'User not found' });
-    }
-
-    // Set the image property
-    user.professional.image = profileImage;
-    await user.save();
-
-    res.send(profileImage);
-  } catch (err) {
-    console.log(err);
-  }
-});
 
 app.get("/get-image", async (req, res) => {
   try {
