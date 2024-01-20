@@ -60,6 +60,7 @@ exports.developmentErrors = (err, req, res, next) => {
 exports.productionErrors = (err, req, res, next) => {
   res.status(err.status || 500).json({
     error: "Internal Server Error",
+    message: err.message,
   }); // send JSON back
 };
 
