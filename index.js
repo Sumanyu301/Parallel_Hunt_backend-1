@@ -141,7 +141,7 @@ const upload = multer({
 app.post("/upload", (req, res) => {
   upload(req, res, (err) => {
     if (err) {
-      console.log(err);
+        console.log(err);
     } else {
       const newImage = new imageModel({
         email: req.body.email,
