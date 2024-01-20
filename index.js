@@ -147,22 +147,26 @@ cloudinary.config({
 });
 
 app.post("/upload-image", upload.single("image"), async (req, res) => {
-  const email = req.body.email;
   try {
+    const { email } = req.body;
     const result = await cloudinary.uploader.upload(req.file.path);
     const profileImage = result.secure_url;
+    
     fs.unlinkSync(req.file.path);
+
     const image = new Images({
       url: profileImage,
       email: email,
     });
+
     await image.save();
-    res.send({ status: "ok" });
+    res.json({ status: "ok" });
   } catch (error) {
-    console.log(error.message); // Log the error message to the console
-    res.status(500).send({ error: error.message }); // Send the error message in the response
+    console.error(error.message);
+    res.status(500).json({ error: "Image upload failed" });
   }
 });
+
 
 app.get("/get-image", async (req, res) => {
   try {
