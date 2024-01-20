@@ -151,7 +151,6 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     const { email } = req.body;
     const result = await cloudinary.uploader.upload(req.file.path);
     const profileImage = result.secure_url;
-    
 
     const image = new Images({
       url: profileImage,
@@ -165,7 +164,6 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Image upload failed" });
   }
 });
-
 
 app.get("/get-image", async (req, res) => {
   try {
