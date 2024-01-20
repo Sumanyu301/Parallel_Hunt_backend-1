@@ -98,39 +98,14 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/person", async (req, res) => {
-  const organisation = req.body.organisation;
-  const profession = req.body.profession;
-  const experience = req.body.experience;
-  const skills = req.body.skills;
-  const certification = req.body.certification;
-  const tech_stack = req.body.tech_stack;
-  const availability = req.body.availability;
-  const achievements = req.body.achievements;
-
-  try {
-    const users = await User.find({
-      $and: [
-        {
-          "professional.availability": true,
-        },
-        {
-          $or: [
-            { "professional.organisation": { $exists: true } },
-            { "professional.skills": { $exists: true } },
-            { "professional.certification": { $exists: true } },
-            { "professional.tech_stack": { $exists: true } },
-            { "professional.achievements": { $exists: true } },
-          ],
-        },
-      ],
-    });
-
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
+  app.post("/person", async (req, res) => {
+    try {
+      const users = await User.find();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  });
 
 app.post("/admin/signin", async (req, res) => {
   const username = req.body.username;
