@@ -57,7 +57,7 @@ app.post("/signup", async (req, res) => {
     "personal.Email": data.personal.Email,
   });
   if (existingUser) {
-    return res.status(200).json({ msg:false });
+    return res.status(200).json({ msg: false });
   }
 
   //creating a salt
@@ -71,7 +71,7 @@ app.post("/signup", async (req, res) => {
 
     const newUser = new User(parsedData);
     await newUser.save();
-    res.status(200).json({ msg:true });
+    res.status(200).json({ msg: true });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -98,14 +98,14 @@ app.post("/login", async (req, res) => {
   }
 });
 
-  app.get("/person", async (req, res) => {
-    try {
-      const users = await User.find();
-      res.status(200).json(users);
-    } catch (error) {
-      res.status(400).send(error);
-    }
-  });
+app.get("/person", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 
 app.post("/admin/signin", async (req, res) => {
   const username = req.body.username;
@@ -160,22 +160,15 @@ app.post("/upload", (req, res) => {
 
 app.get("/getImage", async (req, res) => {
   try {
-    const email = req.body.email;
-    // Find the image by email
-    const img = await imageModel.findOne({ email });
-
-    if (!img) {
-      return res.status(404).json({ message: "Image not found" });
-    }
-
-    // Set the correct content type
-    res.contentType(img.image.contentType);
-    res.send(img.image.data);
+    const images = await imageModel.find();
+    const imageDetails = images.map((image) => ({
+      email: image.email,
+      image: image.image.data,
+    }));
+    res.json(imageDetails);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while retrieving the image" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
