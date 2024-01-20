@@ -152,7 +152,6 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path);
     const profileImage = result.secure_url;
     
-    fs.unlinkSync(req.file.path);
 
     const image = new Images({
       url: profileImage,
@@ -160,6 +159,7 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     });
 
     await image.save();
+    fs.unlinkSync(req.file.path);
     res.json({ status: "ok" });
   } catch (error) {
     console.error(error.message);
