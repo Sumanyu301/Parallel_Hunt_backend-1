@@ -159,7 +159,6 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     });
 
     await image.save();
-    fs.unlinkSync(req.file.path);
     res.json({ status: "ok" });
   } catch (error) {
     console.error(error.message);
