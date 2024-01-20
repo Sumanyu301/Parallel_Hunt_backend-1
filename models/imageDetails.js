@@ -1,16 +1,15 @@
 const mongoose = require("mongoose");
 
-const ImageDetailsScehma = new mongoose.Schema({
-  email:{
-    type: String,
-    required:true
-  },
-  image:
-  {
-    data:Buffer,
-    contentType:String
-  }
+const imageSchema = new mongoose.Schema({
+  filename: String,
+  uploadDate: Date,
 });
 
-const imageModel =mongoose.model("ImageModel", ImageDetailsScehma);
-module.exports = imageModel;
+const Images = mongoose.model("Images", imageSchema);
+
+module.exports = Images;
+module.exports = {
+  url: "mongodb://localhost:27017/",
+  database: "bezkoder_files_db",
+  imgBucket: "photos",
+};

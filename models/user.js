@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     availability: Boolean,
     resume: String,
     achievements: String,
+    image: String,
   },
 });
 

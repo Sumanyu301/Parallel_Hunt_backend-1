@@ -6,19 +6,19 @@ const dotenv = require("dotenv"); //environment var ke liye
 const cors = require("cors"); // cors library
 const multer = require("multer"); //image upload karne ke liye more like files ke liye but yeah
 const port = process.env.PORT || 5000; //env mein port storage
-
+const fs = require("fs");
 app.use(cors()); // enable CORS
 //mongoose connection
-
 const User = require("./models/user.js"); //importing the db schema for user
 const Event = require("./models/event.js"); //event ka schema
 const Admin = require("./models/admin.js"); //admin ka schema
 const Images = require("./models/imageDetails.js"); //image details
-
+const path = require("path"); //path module
 const z = require("zod"); //zod input validation.
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //form se data jab aata hai
+//app.use("/uploads" , express.static( path.join(__dirname ,"/uploads")));
 
 const userZodSchema = z.object({
   personal: z.object({
@@ -85,11 +85,10 @@ app.post("/login", async (req, res) => {
     if (!user) {
       return res.status(200).json({ msg: false });
     }
-    const name = user.personal.name;
     const dbPassword = user.personal.password;
     const result = await bcrypt.compare(password, dbPassword);
     if (result) {
-      return res.status(200).json({ msg: true, name: name });
+      return res.status(200).json({ msg: true, user: user });
     } else {
       return res.status(200).json({ msg: false });
     }
@@ -128,47 +127,54 @@ app.post("/admin/signin", async (req, res) => {
 });
 
 //STORAGE
-const Storage = multer.diskStorage({
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname + Date.now());
   },
 });
 
-const upload = multer({
-  storage: Storage,
-}).single("testImage");
+const upload = multer({ storage: storage });
 
-app.post("/upload", (req, res) => {
-  upload(req, res, (err) => {
-    if (err) {
-        console.log(err);
-    } else {
-      const newImage = new imageModel({
-        email: req.body.email,
-        image: {
-          data: req.file.filename,
-          contentType: "image/png",
-        },
-      });
-      newImage
-        .save()
-        .then(() => res.send("successfully uploaded"))
-        .catch((err) => console.log(err));
-    }
-  });
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "dlybiw4of",
+  api_key: "496169192835494",
+  api_secret: "vXLWAfYUrjLV1stNHS0qYzuWFiU",
 });
 
-app.get("/getImage", async (req, res) => {
+app.post("/upload-image", upload.single("image"), async (req, res) => {
   try {
-    const images = await imageModel.find();
-    const imageDetails = images.map((image) => ({
-      email: image.email,
-      image: image.image.data,
-    }));
-    res.json(imageDetails);
+    const result = await cloudinary.uploader.upload(req.file.path);
+    const profileImage = result.secure_url;
+    fs.unlinkSync(req.file.path);
+
+    // Find a user in the database
+    const user = await User.findById(req.body.userId);
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    // Set the image property
+    user.professional.image = profileImage;
+    await user.save();
+
+    res.send(profileImage);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get("/get-image", async (req, res) => {
+  try {
+    Images.find({}).then((data) => {
+      res.send({ status: "ok", data: data });
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.json({ status: error });
   }
 });
 
