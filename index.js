@@ -117,8 +117,6 @@ app.post("/person", async (req, res) => {
         {
           $or: [
             { "professional.organisation": { $exists: true } },
-            { "professional.profession": { $exists: true } },
-            { "professional.experience": { $exists: true } },
             { "professional.skills": { $exists: true } },
             { "professional.certification": { $exists: true } },
             { "professional.tech_stack": { $exists: true } },
