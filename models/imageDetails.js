@@ -5,6 +5,10 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
 });
 
 const Images = mongoose.model("Images", imageSchema);
