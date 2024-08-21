@@ -141,9 +141,9 @@ const upload = multer({ storage: storage });
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
-  cloud_name: "dlybiw4of",
-  api_key: "496169192835494",
-  api_secret: "vXLWAfYUrjLV1stNHS0qYzuWFiU",
+  cloud_name: "",
+  api_key: "",
+  api_secret: "",
 });
 
 app.post("/upload-image", upload.single("image"), async (req, res) => {
